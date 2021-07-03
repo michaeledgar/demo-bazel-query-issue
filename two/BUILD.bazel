@@ -1,0 +1,7 @@
+load("@io_bazel_rules_kotlin//kotlin:kotlin.bzl", "kt_jvm_test")
+kt_jvm_test(
+    name = "SecondTest",
+    srcs = ["SecondTest.kt"],
+    deps = [],
+)
+
