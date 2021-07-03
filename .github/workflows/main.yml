@@ -10,7 +10,4 @@ jobs:
     steps:
       - name: Run command
         run: |
-          bazel query --noshow_progress --universe_scope=//...
---order_output=no "filter('^[^@]', kind(test,
-allrdeps(siblings(rbuildfiles(WORKSPACE)))))"
-
+          bazel query --noshow_progress --universe_scope=//... --order_output=no "filter('^[^@]', kind(test, allrdeps(siblings(rbuildfiles(WORKSPACE)))))"
