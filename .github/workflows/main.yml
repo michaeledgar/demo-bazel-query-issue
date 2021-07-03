@@ -1,0 +1,16 @@
+name: Sample workflow to run query
+
+on:
+  workflow_dispatch:
+
+jobs:
+  check_bazel_query:
+    name: Attempt to run Bazel query that breaks in CI
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Run command
+        run: |
+          bazel query --noshow_progress --universe_scope=//...
+--order_output=no "filter('^[^@]', kind(test,
+allrdeps(siblings(rbuildfiles(WORKSPACE)))))"
+
