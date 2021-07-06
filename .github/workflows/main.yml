@@ -15,6 +15,12 @@ jobs:
         uses: abhinavsingh/setup-bazel@v3
         with:
           version: 4.0.0
-      - name: Run command
+      - name: Run command (first part)
+        run: |
+          bazel query --noshow_progress --universe_scope=//... --order_output=no "rbuildfiles(WORKSPACE)"
+      - name: Run command (second part)
+        run: |
+          bazel query --noshow_progress --universe_scope=//... --order_output=no "siblings(rbuildfiles(WORKSPACE))"
+      - name: Run command (full part)
         run: |
           bazel query --noshow_progress --universe_scope=//... --order_output=no "filter('^[^@]', kind(test, allrdeps(siblings(rbuildfiles(WORKSPACE)))))"
