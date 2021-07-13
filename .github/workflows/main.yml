@@ -11,20 +11,28 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
+          path: repodir
       - name: Set up Bazel
         uses: abhinavsingh/setup-bazel@v3
         with:
           version: 4.0.0
-      - name: Run command (first part)
+      - name: Setup output-base
+        run: mkdir -p /tmp/bazelout
+      - name: Run command (no allrdeps)
         run: |
-          bazel query --noshow_progress --universe_scope=//... --order_output=no "rbuildfiles(WORKSPACE)"
-      - name: Run command (second part)
+          bazel --host_jvm_args=-XX:ActiveProcessorCount=2 --output_base=/tmp/bazelout query --noshow_progress --universe_scope=//... --order_output=no "siblings(rbuildfiles(WORKSPACE))"
+        timeout-minutes: 2
+        continue-on-error: true
+        working-directory: repodir
+      - name: Run command (no kind)
         run: |
-          bazel query --noshow_progress --universe_scope=//... --order_output=no "siblings(rbuildfiles(WORKSPACE))"
-      - name: Run command (full part)
-        run: |
-          bazel query --noshow_progress --universe_scope=//... --order_output=no "filter('^[^@]', kind(test, allrdeps(siblings(rbuildfiles(WORKSPACE)))))"
-        timeout-minutes: 3
-      - name: Dump INFO log
-        run: |
-          cat "$(bazel info server_log)"
+          bazel --host_jvm_args=-XX:ActiveProcessorCount=2 --output_base=/tmp/bazelout query -k --show_progress --universe_scope=//... --order_output=no "allrdeps(siblings(rbuildfiles(WORKSPACE)))"
+        timeout-minutes: 2
+        continue-on-error: true
+        working-directory: repodir
+      - name: Archive INFO log
+        uses: actions/upload-artifact@v2
+        with:
+          name: javalog
+          path: |
+            /tmp/bazelout/java.*
