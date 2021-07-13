@@ -24,3 +24,7 @@ jobs:
       - name: Run command (full part)
         run: |
           bazel query --noshow_progress --universe_scope=//... --order_output=no "filter('^[^@]', kind(test, allrdeps(siblings(rbuildfiles(WORKSPACE)))))"
+        timeout-minutes: 3
+      - name: Dump INFO log
+        run: |
+          cat "$(bazel info server_log)"
